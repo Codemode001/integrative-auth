@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,13 +14,30 @@ import {
   Link,
   Stack,
   Text,
+  CircularProgress, // Import CircularProgress for loading spinner
 } from "@chakra-ui/react";
 import styled from "styled-components";
-
-import { OAuthButtonGroup } from "../components/chakra/login/OAuthButtonGroup";
-import { PasswordField } from "../components/chakra/login/PasswordField";
+import { login } from "../utils/supabase/actions";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+
+  const handleLogin = async () => {
+    setIsLoading(true); // Set loading state to true when login starts
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      await login(formData);
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false); // Set loading state to false when login finishes
+    }
+  };
+
   return (
     <Container
       maxW="lg"
@@ -49,7 +66,7 @@ const Login = () => {
             </Heading>
             <Text color="fg.muted">
               Don't have an account?{" "}
-              <Link href="#" style={{ color: "#2b95d4" }}>
+              <Link href="/signup" style={{ color: "#2b95d4" }}>
                 Sign up
               </Link>
             </Text>
@@ -66,9 +83,22 @@ const Login = () => {
             <Stack spacing="5">
               <FormControl>
                 <FormLabel htmlFor="email">Email</FormLabel>
-                <Input id="email" type="email" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </FormControl>
-              <PasswordField />
+              <FormControl>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormControl>
             </Stack>
             <HStack justify="space-between">
               <Checkbox defaultChecked>Remember me</Checkbox>
@@ -77,8 +107,19 @@ const Login = () => {
               </Button>
             </HStack>
             <Stack spacing="6">
-              <Button style={{ backgroundColor: "#3182ce", color: "white" }}>
-                Sign in
+              <Button
+                style={{ backgroundColor: "#3182ce", color: "white" }}
+                onClick={handleLogin}
+                disabled={isLoading}
+              >
+                {" "}
+                {/* Disable button when loading */}
+                {isLoading ? (
+                  <CircularProgress size="24px" color="white" />
+                ) : (
+                  "Sign in"
+                )}{" "}
+                {/* Show loading spinner if isLoading is true, otherwise show "Sign in" */}
               </Button>
               <HStack>
                 <Divider />
@@ -87,7 +128,7 @@ const Login = () => {
                 </Text>
                 <Divider />
               </HStack>
-              <OAuthButtonGroup />
+              {/* Include OAuthButtonGroup here if needed */}
             </Stack>
           </Stack>
         </Box>
