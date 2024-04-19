@@ -21,7 +21,9 @@ import { login } from "../utils/supabase/actions";
 import { OAuthButtonGroup } from "../components/chakra/login/OAuthButtonGroup";
 
 const Logo = styled.img`
-  width: 12rem;
+  width: 50%;
+  height: 8rem;
+  object-fit: cover;
 `;
 
 const Login = () => {
