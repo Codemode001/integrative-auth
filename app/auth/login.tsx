@@ -14,18 +14,23 @@ import {
   Link,
   Stack,
   Text,
-  CircularProgress, // Import CircularProgress for loading spinner
+  CircularProgress,
 } from "@chakra-ui/react";
 import styled from "styled-components";
 import { login } from "../utils/supabase/actions";
+import { OAuthButtonGroup } from "../components/chakra/login/OAuthButtonGroup";
+
+const Logo = styled.img`
+  width: 12rem;
+`;
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    setIsLoading(true); // Set loading state to true when login starts
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("email", email);
@@ -34,7 +39,7 @@ const Login = () => {
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
-      setIsLoading(false); // Set loading state to false when login finishes
+      setIsLoading(false);
     }
   };
 
@@ -113,13 +118,11 @@ const Login = () => {
                 disabled={isLoading}
               >
                 {" "}
-                {/* Disable button when loading */}
                 {isLoading ? (
                   <CircularProgress size="24px" color="white" />
                 ) : (
                   "Sign in"
                 )}{" "}
-                {/* Show loading spinner if isLoading is true, otherwise show "Sign in" */}
               </Button>
               <HStack>
                 <Divider />
@@ -128,7 +131,7 @@ const Login = () => {
                 </Text>
                 <Divider />
               </HStack>
-              {/* Include OAuthButtonGroup here if needed */}
+              <OAuthButtonGroup />
             </Stack>
           </Stack>
         </Box>
@@ -138,7 +141,3 @@ const Login = () => {
 };
 
 export default Login;
-
-const Logo = styled.img`
-  width: 12rem;
-`;

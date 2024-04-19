@@ -1,11 +1,38 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { createClient } from "../utils/supabase/client";
 
 const supabase = createClient();
 
 const ProfilePage = () => {
+  const [userEmail, setUserEmail] = useState<any>();
+  const [userName, setUserName] = useState<any>();
+
+  const fetchUserEmail = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (data && !error) {
+        setUserEmail(data.session?.user.email);
+        console.log(userEmail);
+      }
+    } catch (error) {
+      console.error("Error fetching user email:", error);
+    }
+  };
+
+  const fetchUserName = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (data && !error) {
+        setUserName(data.session?.user.user_metadata.displayName);
+        console.log(userName);
+      }
+    } catch (error) {
+      console.error("Error fetching user email:", error);
+    }
+  };
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (!error) {
@@ -16,12 +43,20 @@ const ProfilePage = () => {
     }
   }
 
+  useEffect(() => {
+    fetchUserEmail();
+    fetchUserName();
+  });
+
   return (
     <PageContainer>
       <ProfileCard>
-        <ProfileImage src="https://via.placeholder.com/150" alt="Profile" />
-        <Name>Your Name</Name>
-        <Email>your.email@example.com</Email>
+        <ProfileImage
+          src="https://m.media-amazon.com/images/M/MV5BMTI5ODY5NTUzMF5BMl5BanBnXkFtZTcwOTAzNTIzMw@@._V1_.jpg"
+          alt="Profile"
+        />
+        <Name>{userName ? userName : "ngalan"}</Name>
+        <Email>{userEmail ? userEmail : "email"}</Email>
         <EditProfileButton>Edit Profile</EditProfileButton>
         <LogoutButton onClick={signOut}>Logout</LogoutButton>
       </ProfileCard>
@@ -48,11 +83,15 @@ const ProfileCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 20rem;
 `;
 
 const ProfileImage = styled.img`
   border-radius: 50%;
   margin-bottom: 20px;
+  width: 8rem;
+  height: 8rem;
+  object-fit: cover;
 `;
 
 const Name = styled.h1`
